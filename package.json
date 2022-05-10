@@ -8,8 +8,10 @@
     "post-update": "yarn upgrade --latest"
   },
   "dependencies": {
-    "formidable": "1.2.2",
-    "next": "latest"
+    "formidable": "latest",
+    "next": "latest",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
   },
   "license": "MIT",
   "keywords": [],
