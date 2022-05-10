@@ -20,9 +20,12 @@ const post = async (req, res) => {
 
 // Metodo para guardar el archivo. Darle nombre y ubicacion
 const saveFile = async (file) => {
-  const data = fs.readFileSync(file.path);
-  fs.writeFileSync(`./public/uploads/${file.name}`, data);
-  await fs.unlinkSync(file.path);
+  console.log('data', file.filepath);
+  const data = fs.readFileSync(file.filepath);
+  console.log('data', data);
+  //console.log('path', `./public/${file.name}`);
+  fs.writeFileSync(`./public/uploads/${file.originalFilename}`, data);
+  await fs.unlinkSync(file.filepath);
   return;
 };
 
@@ -32,6 +35,11 @@ const readDir = async (req,res) => {
   
   if (fs.existsSync(dir)) {
     output = await fs.readdirSync(dir);
+
+    // agrego la ruta estatica
+    output.forEach((file, idx) => {
+      output[idx] = `/uploads/${file}`;
+    });
   }
 
   return res.status(200).send(output);
