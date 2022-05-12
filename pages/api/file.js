@@ -1,6 +1,9 @@
 // Importo librerias para manejo de archivos
 import formidable from "formidable";
 import fs from "fs";
+import path from "path";
+
+const uploadDirectory = path.resolve(process.cwd(), "public/uploads/");
 
 // Expongo que la API va a escuchar como 'bodyParser'
 export const config = {
@@ -14,22 +17,23 @@ const post = async (req, res) => {
   const form = new formidable.IncomingForm();
   form.parse(req, async function (err, fields, files) {
     await saveFile(files.file);
-    return res.status(201).send("");
+    
+    await readDir(req,res);
   });
 };
 
 // Metodo para guardar el archivo. Darle nombre y ubicacion
 const saveFile = async (file) => {
-  console.log('data', file.filepath);
   const data = fs.readFileSync(file.filepath);
-  console.log('data', data);
-  //console.log('path', `./public/${file.name}`);
-  fs.writeFileSync(`./public/uploads/${file.originalFilename}`, data);
+
+  fs.writeFileSync(path.join(uploadDirectory, file.originalFilename.replace(/\s/g, '_')), data);
+  
   await fs.unlinkSync(file.filepath);
   return;
 };
 
 const readDir = async (req,res) => {
+  try {
   const dir = './public/uploads/';
   let output;
   
@@ -41,8 +45,14 @@ const readDir = async (req,res) => {
       output[idx] = `/uploads/${file}`;
     });
   }
-
-  return res.status(200).send(output);
+    res.json({
+      'files': output
+    });
+    return res.status(200).end();
+  } catch (error) {
+    res.json(error);
+    return res.status(405).end();
+  }
 }
 
 // hace un export default, para que sucede con cada metodo HTTP (Post, Put, Get, etc)

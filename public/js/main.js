@@ -25,13 +25,25 @@ const uploadToServer = async (event) => {
     if (inputElement.files[0]) {
         const body = new FormData();
         body.append("file", inputElement.files[0]);
+        
         const response = await fetch("/api/file", {
             method: "POST",
             body
-        });
+        })
+        .then( response => { return response.json() })
+        .then(json => {
+                    console.log('response', json)
+                })
+        .finally(eraseValue)
+        .catch(e=>{console.log('error', e)});
     } else {
         // Tiro que hay error
         alert('Primero elegi un archivo en el input de upload!');
     }
     
+};
+
+const eraseValue = ()=> {
+    inputElement.value = '';
+    preview.src = '';
 };
